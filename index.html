@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="tr" class="h-full bg-amber-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kepirtepe Kütüphanesi - Kitap Kayýt Sistemi</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font - Inter & Playfair Display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        library: {
+                            50: '#fffbeed',
+                            100: '#fef3c7',
+                            200: '#fde68a',
+                            300: '#fcd34d',
+                            400: '#fbbf24',
+                            500: '#f59e0b', // Main Orange
+                            600: '#d97706',
+                            700: '#b45309', // Dark Orange/Warm Brown
+                            800: '#78350f', // Deep Brown
+                            900: '#451a03', // Darkest Brown
+                            accent: '#ea580c', // Bright Orange Accent
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .wood-pattern {
+            background-color: #451a03;
+            background-image: radial-gradient(#78350f 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #fef3c7;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #b45309;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="h-full font-sans antialiased bg-[#fdfbf7] text-amber-950 flex flex-col custom-scrollbar">
+
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-library-900 via-library-800 to-amber-900">
+        <div class="max-w-md w-full space-y-8 bg-amber-50/95 backdrop-blur p-8 rounded-2xl shadow-2xl border-2 border-library-600/30">
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-library-700 text-amber-100 mb-4 shadow-lg ring-4 ring-library-500/30">
+                    <i class="fa-solid fa-book-bookmark text-3xl"></i>
+                </div>
+                <h2 class="font-serif text-3xl font-bold text-library-900">Kepirtepe Kütüphanesi</h2>
+                <p class="mt-2 text-sm text-library-700 font-medium">Kitap Kayýt ve Yönetim Sistemine Giriþ Yapýn</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" onsubmit="handleLogin(event)" class="mt-8 space-y-6">
+                <div id="loginError" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>Kullanýcý adý veya þifre hatalý!</span>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label for="username" class="block text-sm font-semibold text-library-900 mb-1">Kullanýcý Adý</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-library-600">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+                            <input id="username" type="text" required placeholder="Kullanýcý adýnýzý girin" 
+                                class="w-full pl-10 pr-4 py-3 rounded-xl border border-amber-300 focus:ring-2 focus:ring-library-500 focus:border-library-500 bg-white text-library-900 placeholder-amber-400 transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-semibold text-library-900 mb-1">Þifre</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-library-600">
+                                <i class="fa-solid fa-lock"></i>
+                            </div>
+                            <input id="password" type="password" required placeholder="••••••••" 
+                                class="w-full pl-10 pr-4 py-3 rounded-xl border border-amber-300 focus:ring-2 focus:ring-library-500 focus:border-library-500 bg-white text-library-900 placeholder-amber-400 transition">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" 
+                        class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-library-600 to-library-700 hover:from-library-700 hover:to-library-800 text-white font-semibold shadow-lg hover:shadow-xl transition duration-200 flex justify-center items-center gap-2 text-base">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        Giriþ Yap
+                    </button>
+                </div>
+
+                <div class="text-center text-xs text-amber-800/70 pt-2 border-t border-amber-200">
+                    Sistem Eriþimi: Kepirtepe Anadolu Lisesi Kütüphanesi
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN APPLICATION DASHBOARD (Hidden initially) -->
+    <div id="appScreen" class="hidden min-h-screen flex flex-col bg-amber-50/40">
+        <!-- Top Navigation Header -->
+        <header class="bg-gradient-to-r from-library-900 via-library-800 to-library-900 text-amber-100 shadow-xl border-b-4 border-library-500 sticky top-0 z-30">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 bg-library-700 rounded-xl shadow-inner border border-library-500/30">
+                            <i class="fa-solid fa-book-open text-2xl text-library-300"></i>
+                        </div>
+                        <div>
+                            <h1 class="font-serif text-2xl font-bold tracking-wide text-amber-50">Kepirtepe Kütüphanesi</h1>
+                            <p class="text-xs text-amber-300/80 font-light">Kitap Kayýt & Yönetim Portalý</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <div class="hidden sm:flex items-center gap-2 bg-library-950/50 px-3 py-1.5 rounded-lg border border-library-700/50 text-xs">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span class="text-amber-200">Oturum Açýldý: <strong>Kepirtepe</strong></span>
+                        </div>
+                        <button onclick="handleLogout()" 
+                            class="bg-library-700 hover:bg-library-600 text-amber-100 px-4 py-2 rounded-lg transition text-sm font-medium flex items-center gap-2 border border-library-500/40 shadow-sm">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                            <span class="hidden sm:inline">Çýkýþ Yap</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+            
+            <!-- Welcome Banner & Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="md:col-span-1 bg-gradient-to-br from-library-800 to-library-900 rounded-2xl p-5 text-amber-50 shadow-md flex flex-col justify-between border-l-4 border-library-500">
+                    <div>
+                        <span class="text-xs font-semibold uppercase tracking-wider text-amber-300">Hoþ Geldiniz</span>
+                        <h2 class="text-xl font-bold font-serif mt-1">Sistem Aktif</h2>
+                    </div>
+                    <p class="text-xs text-amber-200/80 mt-2">Kitap kayýtlarýný düzenleyebilir, yeni eserler ekleyebilir veya arama yapabilirsiniz.</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-5 border border-amber-200/80 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-amber-800">Toplam Kitap Sayýsý</p>
+                        <h3 id="statTotalBooks" class="text-3xl font-bold text-library-900 mt-1">0</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-amber-100 text-library-700 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-books"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-5 border border-amber-200/80 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-amber-800">Mevcut (Raflarda)</p>
+                        <h3 id="statAvailableBooks" class="text-3xl font-bold text-emerald-700 mt-1">0</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-5 border border-amber-200/80 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-amber-800">Ödünç Verilen</p>
+                        <h3 id="statBorrowedBooks" class="text-3xl font-bold text-amber-600 mt-1">0</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-hand-holding-heart"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Left Column: Add/Edit Book Form -->
+                <div class="lg:col-span-5 bg-white rounded-2xl shadow-md border border-amber-200/80 p-6 self-start">
+                    <div class="flex items-center justify-between mb-6 pb-3 border-b border-amber-100">
+                        <h2 id="formTitle" class="text-lg font-serif font-bold text-library-900 flex items-center gap-2">
+                            <i class="fa-solid fa-plus-circle text-library-600"></i>
+                            Yeni Kitap Kaydý
+                        </h2>
+                        <button id="cancelEditBtn" onclick="resetForm()" class="hidden text-xs text-amber-700 hover:text-amber-900 bg-amber-100 px-2.5 py-1 rounded-md font-medium">
+                            <i class="fa-solid fa-xmark mr-1"></i>Ýptal
+                        </button>
+                    </div>
+
+                    <form id="bookForm" onsubmit="handleSaveBook(event)" class="space-y-4">
+                        <input type="hidden" id="bookId">
+
+                        <div>
+                            <label class="block text-xs font-semibold text-library-900 mb-1">Kitabýn Adý *</label>
+                            <input type="text" id="bookTitle" required placeholder="Örn: Nutuk, Çalýkuþu..." 
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-amber-200 focus:ring-2 focus:ring-library-500 focus:border-library-500 bg-amber-50/30 text-sm">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-library-900 mb-1">Yazar *</label>
+                                <input type="text" id="bookAuthor" required placeholder="Örn: Mustafa Kemal Atatürk" 
+                                    class="w-full px-3.5 py-2.5 rounded-xl border border-amber-200 focus:ring-2 focus:ring-library-500 focus:border-library-500 bg-amber-50/30 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-library-900 mb-1">Kitap Grubu / Türü *</label>
+                                <select id="bookGroup" required class="w-full px-3.5 py-2.5 rounded-xl border border-amber-200 focus:ring-2 focus:ring-library-500 focus:border-library-500 bg-amber-50/30 text-sm">
+                                    <option value="">Seçiniz</option>
+                                    <option value="Edebiyat & Roman">Edebiyat & Roman</option>
+                                    <option value="Tarih & Araþtýrma">Tarih & Araþtýrma</option>
+                                    <option value="Felsefe & Düþünce">Felsefe & Düþünce</option>
+                                    <option value="Bilim & Teknoloji">Bilim & Teknoloji</option>
+                                    <option value="Þiir & Tiyatro">Þiir & Tiyatro</option>
+                                    <option value="Kiþisel Geliþim">Kiþisel Geliþim</option>
+                                    <option value="Ders & Kaynak Kitap">Ders & Kaynak Kitap</option>
+                                    <option value="Diðer">Diðer</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-library-900 mb-1">Basým Yýlý</label>
+                                <input type="number" id="bookYear" min="1000" max="2099" placeholder="2020" 
+                                    class="w-full px-3 py-2 rounded-xl border border-amber-200 focus:ring-2 focus:ring-library-500 focus:border-library-500 bg-amber-50/30 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-library-900 mb-1">Sayfa Sayýsý</label>
+                                <input type="number" id="bookPages" min="1" placeholder="320" 
+                                    class="w-full px-3 py-2 rounded-xl border border-amber-200 focus:ring-2 focus:ring-library-500 focus:border-library-500 bg-amber-50/30 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-library-900 mb-1">Raf / Dolap No</label>
+                                <input type="text" id="bookLocation" placeholder="A-12" 
+                                    class="w-full px-3 py-2 rounded-xl border border-amber-200 focus:ring-2 focus:ring-library-500 focus:border-library-500 bg-amber-50/30 text-sm">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-library-900 mb-1">Durum</label>
+                            <select id="bookStatus" class="w-full px-3.5 py-2.5 rounded-xl border border-amber-200 focus:ring-2 focus:ring-library-500 focus:border-library-500 bg-amber-50/30 text-sm">
+                                <option value="Kütüphanede">Kütüphanede (Mevcut)</option>
+                                <option value="Ödünç Verildi">Ödünç Verildi</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-library-900 mb-1">Açýklama / Not</label>
+                            <textarea id="bookNotes" rows="2" placeholder="Kitap durumu veya ek notlar..." 
+                                class="w-full px-3.5 py-2 rounded-xl border border-amber-200 focus:ring-2 focus:ring-library-500 focus:border-library-500 bg-amber-50/30 text-sm resize-none"></textarea>
+                        </div>
+
+                        <div class="pt-2">
+                            <button type="submit" id="saveBtn" 
+                                class="w-full py-3 px-4 bg-library-700 hover:bg-library-800 text-white font-medium rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                <span>Kitabý Kaydet</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Right Column: Book List & Search -->
+                <div class="lg:col-span-7 space-y-4">
+                    
+                    <!-- Search & Filter Bar -->
+                    <div class="bg-white rounded-2xl shadow-md border border-amber-200/80 p-4 flex flex-col sm:flex-row gap-3">
+                        <div class="relative flex-1">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-amber-500 text-sm"></i>
+                            <input type="text" id="searchInput" oninput="filterBooks()" placeholder="Kitap adý veya yazar ara..." 
+                                class="w-full pl-9 pr-4 py-2 rounded-xl border border-amber-200 focus:ring-2 focus:ring-library-500 text-sm bg-amber-50/20">
+                        </div>
+                        <div class="w-full sm:w-48">
+                            <select id="groupFilter" onchange="filterBooks()" class="w-full px-3 py-2 rounded-xl border border-amber-200 focus:ring-2 focus:ring-library-500 text-sm bg-amber-50/20">
+                                <option value="">Tüm Gruplar</option>
+                                <option value="Edebiyat & Roman">Edebiyat & Roman</option>
+                                <option value="Tarih & Araþtýrma">Tarih & Araþtýrma</option>
+                                <option value="Felsefe & Düþünce">Felsefe & Düþünce</option>
+                                <option value="Bilim & Teknoloji">Bilim & Teknoloji</option>
+                                <option value="Þiir & Tiyatro">Þiir & Tiyatro</option>
+                                <option value="Kiþisel Geliþim">Kiþisel Geliþim</option>
+                                <option value="Ders & Kaynak Kitap">Ders & Kaynak Kitap</option>
+                                <option value="Diðer">Diðer</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Book Table Card -->
+                    <div class="bg-white rounded-2xl shadow-md border border-amber-200/80 overflow-hidden flex flex-col">
+                        <div class="p-4 bg-amber-100/50 border-b border-amber-200/70 flex items-center justify-between">
+                            <h3 class="font-serif font-bold text-library-900 flex items-center gap-2">
+                                <i class="fa-solid fa-list text-library-700"></i>
+                                Kayýtlý Kitap Listesi
+                            </h3>
+                            <span id="filteredCount" class="text-xs bg-amber-200/70 text-library-900 font-semibold px-2.5 py-1 rounded-full">
+                                0 Kitap Listelendi
+                            </span>
+                        </div>
+
+                        <!-- Scrollable Table Container -->
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-amber-50/80 border-b border-amber-200 text-xs font-semibold text-library-900 uppercase tracking-wider">
+                                        <th class="py-3 px-4">Kitap Adý / Yazar</th>
+                                        <th class="py-3 px-3">Grubu</th>
+                                        <th class="py-3 px-3">Konum</th>
+                                        <th class="py-3 px-3">Durum</th>
+                                        <th class="py-3 px-4 text-right">Ýþlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bookTableBody" class="divide-y divide-amber-100 text-sm">
+                                    <!-- Dynamic Content injected by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Empty State Notice -->
+                        <div id="emptyState" class="hidden p-8 text-center">
+                            <div class="w-16 h-16 bg-amber-100 text-library-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fa-solid fa-book-open text-2xl"></i>
+                            </div>
+                            <p class="text-library-900 font-semibold">Henüz kayýtlý kitap bulunamadý.</p>
+                            <p class="text-xs text-amber-700/80 mt-1">Sol taraftaki formu kullanarak yeni bir kitap ekleyebilirsiniz.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+
+        <!-- Notification Toast -->
+        <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 z-50 bg-library-900 text-amber-100 px-5 py-3 rounded-xl shadow-2xl border border-library-600 flex items-center gap-3">
+            <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+            <span id="toastMessage" class="text-sm font-medium">Ýþlem baþarýyla gerçekleþtirildi.</span>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-library-950 text-amber-200/60 py-4 mt-auto border-t border-library-800 text-center text-xs">
+            <p>© Kepirtepe Anadolu Lisesi Kütüphane Otomasyon Sistemi | Tüm Haklarý Saklýdýr.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Default Sample Books data
+        const initialBooks = [
+            {
+                id: '1',
+                title: 'Nutuk',
+                author: 'Mustafa Kemal Atatürk',
+                group: 'Tarih & Araþtýrma',
+                year: '1927',
+                pages: '543',
+                location: 'A-1',
+                status: 'Kütüphanede',
+                notes: 'Baþyapýt niteliðinde temel kaynak.'
+            },
+            {
+                id: '2',
+                title: 'Çalýkuþu',
+                author: 'Reþat Nuri Güntekin',
+                group: 'Edebiyat & Roman',
+                year: '1922',
+                pages: '409',
+                location: 'B-04',
+                status: 'Kütüphanede',
+                notes: 'Klasik Türk Romaný.'
+            },
+            {
+                id: '3',
+                title: 'Kuyucaklý Yusuf',
+                author: 'Sabahattin Ali',
+                group: 'Edebiyat & Roman',
+                year: '1937',
+                pages: me = '220',
+                location: 'B-05',
+                status: 'Ödünç Verildi',
+                notes: 'Öðrenciye ödünç verildi.'
+            }
+        ];
+
+        // State Management
+        let books = [];
+
+        // App Initialization
+        window.onload = function() {
+            // Load saved books from LocalStorage or use defaults
+            const storedBooks = localStorage.getItem('kepirtepe_books');
+            if (storedBooks) {
+                try {
+                    books = JSON.parse(storedBooks);
+                } catch (e) {
+                    books = [...initialBooks];
+                }
+            } else {
+                books = [...initialBooks];
+                saveBooksToStorage();
+            }
+
+            // Check session status
+            const isLoggedIn = sessionStorage.getItem('kepirtepe_auth') === 'true';
+            if (isLoggedIn) {
+                showAppScreen();
+            } else {
+                showLoginScreen();
+            }
+        };
+
+        // Authentication Handlers
+        function handleLogin(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('username').value.trim();
+            const passwordInput = document.getElementById('password').value.trim();
+            const loginError = document.getElementById('loginError');
+
+            // Exact Login Check: Kepirtepe / 1938
+            if (usernameInput === 'Kepirtepe' && passwordInput === '1938') {
+                loginError.classList.add('hidden');
+                sessionStorage.setItem('kepirtepe_auth', 'true');
+                showAppScreen();
+                showToast('Baþarýyla giriþ yapýldý. Hoþ geldiniz!', 'success');
+            } else {
+                loginError.classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('kepirtepe_auth');
+            showLoginScreen();
+            showToast('Oturum kapatýldý.', 'info');
+        }
+
+        function showLoginScreen() {
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('appScreen').classList.add('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        function showAppScreen() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('appScreen').classList.remove('hidden');
+            renderBooks();
+            updateStats();
+        }
+
+        // LocalStorage Sync
+        function saveBooksToStorage() {
+            localStorage.setItem('kepirtepe_books', JSON.stringify(books));
+        }
+
+        // Save (Add / Update) Book
+        function handleSaveBook(e) {
+            e.preventDefault();
+
+            const bookId = document.getElementById('bookId').value;
+            const title = document.getElementById('bookTitle').value.trim();
+            const author = document.getElementById('bookAuthor').value.trim();
+            const group = document.getElementById('bookGroup').value;
+            const year = document.getElementById('bookYear').value;
+            const pages = document.getElementById('bookPages').value;
+            const location = document.getElementById('bookLocation').value.trim();
+            const status = document.getElementById('bookStatus').value;
+            const notes = document.getElementById('bookNotes').value.trim();
+
+            if (bookId) {
+                // Update Existing
+                const index = books.findIndex(b => b.id === bookId);
+                if (index !== -1) {
+                    books[index] = { id: bookId, title, author, group, year, pages, location, status, notes };
+                    showToast('Kitap bilgileri güncellendi.', 'success');
+                }
+            } else {
+                // Add New
+                const newBook = {
+                    id: Date.now().toString(),
+                    title,
+                    author,
+                    group,
+                    year,
+                    pages,
+                    location,
+                    status,
+                    notes
+                };
+                books.unshift(newBook);
+                showToast('Yeni kitap baþarýyla eklendi.', 'success');
+            }
+
+            saveBooksToStorage();
+            resetForm();
+            renderBooks();
+            updateStats();
+        }
+
+        // Delete Book
+        function deleteBook(id) {
+            const bookToDelete = books.find(b => b.id === id);
+            if (!bookToDelete) return;
+
+            // Custom non-blocking confirm dialog using custom UI state or direct confirmation
+            if (window.confirm(`"${bookToDelete.title}" kitabýný silmek istediðinize emin misiniz?`)) {
+                books = books.filter(b => b.id !== id);
+                saveBooksToStorage();
+                renderBooks();
+                updateStats();
+                showToast('Kitap listeden silindi.', 'danger');
+            }
+        }
+
+        // Prepare Form for Editing
+        function editBook(id) {
+            const book = books.find(b => b.id === id);
+            if (!book) return;
+
+            document.getElementById('bookId').value = book.id;
+            document.getElementById('bookTitle').value = book.title;
+            document.getElementById('bookAuthor').value = book.author;
+            document.getElementById('bookGroup').value = book.group;
+            document.getElementById('bookYear').value = book.year || '';
+            document.getElementById('bookPages').value = book.pages || '';
+            document.getElementById('bookLocation').value = book.location || '';
+            document.getElementById('bookStatus').value = book.status;
+            document.getElementById('bookNotes').value = book.notes || '';
+
+            document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen-to-square text-library-600"></i> Kitap Bilgisini Düzenle';
+            document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-rotate"></i> <span>Güncelle</span>';
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Reset Form to Add Mode
+        function resetForm() {
+            document.getElementById('bookForm').reset();
+            document.getElementById('bookId').value = '';
+            document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-plus-circle text-library-600"></i> Yeni Kitap Kaydý';
+            document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> <span>Kitabý Kaydet</span>';
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+        }
+
+        // Filter and Render Books List
+        function filterBooks() {
+            renderBooks();
+        }
+
+        function renderBooks() {
+            const tbody = document.getElementById('bookTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+            const groupFilter = document.getElementById('groupFilter').value;
+
+            // Apply Filters
+            const filtered = books.filter(book => {
+                const matchesSearch = book.title.toLowerCase().includes(searchQuery) || 
+                                      book.author.toLowerCase().includes(searchQuery);
+                const matchesGroup = groupFilter === '' || book.group === groupFilter;
+                return matchesSearch && matchesGroup;
+            });
+
+            document.getElementById('filteredCount').textContent = `${filtered.length} Kitap Listelendi`;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            tbody.innerHTML = filtered.map(book => {
+                const statusBadge = book.status === 'Kütüphanede' 
+                    ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200"><i class="fa-solid fa-check text-[10px]"></i> Kütüphanede</span>`
+                    : `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-300"><i class="fa-solid fa-hand-holding text-[10px]"></i> Ödünç Verildi</span>`;
+
+                return `
+                    <tr class="hover:bg-amber-50/50 transition">
+                        <td class="py-3 px-4">
+                            <div class="font-semibold text-library-900">${escapeHtml(book.title)}</div>
+                            <div class="text-xs text-amber-800/80"><i class="fa-solid fa-user-pen text-[10px] mr-1"></i>${escapeHtml(book.author)}</div>
+                            ${book.notes ? `<div class="text-[11px] text-amber-700/60 italic mt-0.5">${escapeHtml(book.notes)}</div>` : ''}
+                        </td>
+                        <td class="py-3 px-3 text-xs text-library-800 font-medium">
+                            <span class="bg-amber-100/70 text-amber-900 px-2 py-0.5 rounded-md">${escapeHtml(book.group)}</span>
+                        </td>
+                        <td class="py-3 px-3 text-xs text-library-800">
+                            ${book.location ? `<span class="font-mono bg-stone-100 px-1.5 py-0.5 rounded border text-stone-700">${escapeHtml(book.location)}</span>` : '<span class="text-gray-400">-</span>'}
+                        </td>
+                        <td class="py-3 px-3">
+                            ${statusBadge}
+                        </td>
+                        <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+                            <button onclick="editBook('${book.id}')" title="Düzenle" 
+                                class="p-1.5 bg-amber-100 hover:bg-amber-200 text-library-800 rounded-lg transition text-xs">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="deleteBook('${book.id}')" title="Sil" 
+                                class="p-1.5 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition text-xs">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Update Statistics Counters
+        function updateStats() {
+            document.getElementById('statTotalBooks').textContent = books.length;
+            
+            const availableCount = books.filter(b => b.status === 'Kütüphanede').length;
+            document.getElementById('statAvailableBooks').textContent = availableCount;
+
+            const borrowedCount = books.filter(b => b.status === 'Ödünç Verildi').length;
+            document.getElementById('statBorrowedBooks').textContent = borrowedCount;
+        }
+
+        // Helper: Toast Notifications
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMessage.textContent = message;
+
+            if (type === 'danger') {
+                toastIcon.className = 'fa-solid fa-circle-xmark text-red-400 text-lg';
+            } else if (type === 'info') {
+                toastIcon.className = 'fa-solid fa-circle-info text-sky-400 text-lg';
+            } else {
+                toastIcon.className = 'fa-solid fa-circle-check text-emerald-400 text-lg';
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Utility: HTML Escaping
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[m];
+            });
+        }
+    </script>
+</body>
+</html>
